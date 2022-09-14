@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import ru.yandex.practicum.filmorate.exceptions.UserException;
 import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.exceptions.UserIDException;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,11 +37,11 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public User update(@Valid @RequestBody User user) throws UserException {
+    public User update(@Valid @RequestBody User user) throws UserException, UserIDException {
         log.info("Получен PUT запрос /users. Передано: {}", user);
         if (!users.containsKey(user.getId())) {
             log.warn("Пользователя с переданным id: {} не существует.", user.getId());
-            throw new UserException("Пользователя с id: " + user.getId() + " не существует.");
+            throw new UserIDException("Пользователя с id: " + user.getId() + " не существует.");
         } else {
             checkUser(user);
             users.put(user.getId(), user);

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import ru.yandex.practicum.filmorate.exceptions.FilmException;
 import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.exceptions.FilmIDException;
 import ru.yandex.practicum.filmorate.model.Film;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +39,7 @@ public class FilmController {
     }
 
     @PutMapping(value = "/films")
-    public Film update(@Valid @RequestBody Film film) throws FilmException {
+    public Film update(@Valid @RequestBody Film film) throws FilmException, FilmIDException {
         log.info("Получен PUT запрос /films. Передано: {}", film);
         if (films.containsKey(film.getId())) {
             checkFilm(film);
@@ -46,7 +47,7 @@ public class FilmController {
             log.info("Фильм с id: {} успешно обновлен", film.getId());
         } else {
             log.warn("Фильма с id: {} не существует.", film.getId());
-            throw new FilmException("Фильма с таким id: " + film.getId() + " не существует.");
+            throw new FilmIDException("Фильма с таким id: " + film.getId() + " не существует.");
         }
         return film;
     }
