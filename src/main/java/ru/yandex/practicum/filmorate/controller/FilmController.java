@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.controller;
 
 
 import ru.yandex.practicum.filmorate.exceptions.FilmException;
@@ -30,9 +30,8 @@ public class FilmController {
     @PostMapping(value = "/films")
     public Film create(@Valid @RequestBody Film film) throws FilmException {
         log.info("Получен POST запрос /films. Передано: {}", film);
-        film.setId(filmsID);
+        film.setId(filmsID++);
         checkFilm(film);
-        filmsID++;
        films.put(film.getId(), film);
        log.info("Фильму: {} присвоен ID: {}", film.getName(), film.getId());
        return film;

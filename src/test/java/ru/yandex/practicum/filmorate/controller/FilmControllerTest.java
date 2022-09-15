@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bytebuddy.utility.RandomString;
@@ -34,7 +34,7 @@ class FilmControllerTest {
     @Test
     void tryToCreateFilmWithAllRequestGood() throws Exception {
         Film film = new Film( "name", RandomString.make(200), FILMS_BORN.plusDays(1), 1);
-        film.setId(1);
+        film.setId(2);
         String body = objectMapper.writeValueAsString(film);
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))

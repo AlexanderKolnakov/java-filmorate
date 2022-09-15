@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.controller;
 
 
 import ru.yandex.practicum.filmorate.exceptions.UserException;
@@ -28,9 +28,8 @@ public class UserController {
     @PostMapping(value = "/users")
     public User create(@Valid @RequestBody User user) throws UserException {
         log.info("Получен POST запрос /users. Передано: {}", user);
-        user.setId(usersID);
+        user.setId(usersID++);
         checkUser(user);
-        usersID++;
         users.put(user.getId(), user);
         log.info("Пользователю: {} присвоен ID: {}", user.getName(), user.getId());
         return user;
