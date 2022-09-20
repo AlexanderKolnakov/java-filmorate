@@ -17,6 +17,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 public class FilmController {
+    // проверка
 
     private int filmsID = 1;
     private final Map<Integer, Film> films = new HashMap<>();
