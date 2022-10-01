@@ -1,61 +1,75 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.exceptions.FilmException;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exceptions.FilmIDException;
+import ru.yandex.practicum.filmorate.exceptions.UserIDException;
 import ru.yandex.practicum.filmorate.model.Film;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
 public class FilmController {
-    // проверка 1111
 
-    private int filmsID = 1;
-    private final Map<Integer, Film> films = new HashMap<>();
-    private final static LocalDate FILMS_BORN = LocalDate.of(1895, 12, 28);
+    public final InMemoryFilmStorage inMemoryFilmStorage;
+    public final FilmService filmService;
+
+    @Autowired
+    public FilmController(InMemoryFilmStorage inMemoryFilmStorage, FilmService filmService) {
+        this.inMemoryFilmStorage = inMemoryFilmStorage;
+        this.filmService = filmService;
+    }
 
     @GetMapping("/films")
-    public List<Film> findAll() {
-        return new ArrayList<>(films.values());
+        public List<Film> findAll() {
+        log.info("Получен GET запрос /films.");
+        return inMemoryFilmStorage.findAll();
+    }
+    @GetMapping("/films/{id}")
+    public Film findFilm(@PathVariable long id) throws FilmIDException {
+        log.info("Получен GET запрос /films/{}.", id);
+        return inMemoryFilmStorage.getFilm(id);
+    }
+    @GetMapping("/films/popular")
+    public List<Film> findMostLikedFilms(@RequestParam(defaultValue = "10") long count) {
+        log.info("Получен GET запрос /films/popular?count={}.", count);
+        List<Film>  ff = filmService.getMostLikedFilms(count);
+        log.info("{}", ff);
+        return ff;
     }
 
-    @PostMapping(value = "/films")
+
+    @PostMapping("/films")
     public Film create(@Valid @RequestBody Film film) throws FilmException {
         log.info("Получен POST запрос /films. Передано: {}", film);
-        film.setId(filmsID++);
-        checkFilm(film);
-       films.put(film.getId(), film);
-       log.info("Фильму: {} присвоен ID: {}", film.getName(), film.getId());
-       return film;
-    }
-
-    @PutMapping(value = "/films")
-    public Film update(@Valid @RequestBody Film film) throws FilmException, FilmIDException {
-        log.info("Получен PUT запрос /films. Передано: {}", film);
-        if (films.containsKey(film.getId())) {
-            checkFilm(film);
-            films.put(film.getId(), film);
-            log.info("Фильм с id: {} успешно обновлен", film.getId());
-        } else {
-            log.warn("Фильма с id: {} не существует.", film.getId());
-            throw new FilmIDException("Фильма с таким id: " + film.getId() + " не существует.");
-        }
+        inMemoryFilmStorage.create(film);
+        log.info("Фильму: {} присвоен ID: {}", film.getName(), film.getId());
         return film;
     }
 
-    private void checkFilm(Film film) throws FilmException {
-        if (film.getReleaseDate().isBefore(FILMS_BORN)) {
-            log.warn("Дата выхода фильма {} не может быть раньше, чем: {}", film.getReleaseDate() ,FILMS_BORN);
-            throw new FilmException("Дата выхода фильма не может быть раньше, чем: " + FILMS_BORN);
-        }
+    @PutMapping("/films")
+    public Film update(@Valid @RequestBody Film film) throws FilmException, FilmIDException {
+        log.info("Получен PUT запрос /films. Передано: {}", film);
+        inMemoryFilmStorage.update(film);
+        return film;
     }
+    @PutMapping("/films/{id}/like/{userId}")
+    public void addLike(@PathVariable long id, @PathVariable long userId) throws FilmIDException, UserIDException {
+        log.info("Получен PUT запрос /films/{}/like/{}.", id, userId);
+        filmService.addLike(userId, id);
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public void deleteLike(@PathVariable long id, @PathVariable long userId) throws FilmIDException, UserIDException {
+        log.info("Получен DELETE запрос /films/{}/like/{}.", id, userId);
+        filmService.deleteLike(userId, id);
+    }
+
 }
