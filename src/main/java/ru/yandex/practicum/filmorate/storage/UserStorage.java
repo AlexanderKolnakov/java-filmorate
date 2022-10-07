@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.exceptions.UserException;
-import ru.yandex.practicum.filmorate.exceptions.UserIDException;
+import ru.yandex.practicum.filmorate.exceptions.IDException;
+import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserStorage {
     public List<User> findAll();
 
-    public User create(User user) throws UserException;
+    public User create(User user) throws ValidateException;
 
-    public User update(User user) throws UserException, UserIDException;
+    public User update(User user) throws ValidateException, IDException;
 }

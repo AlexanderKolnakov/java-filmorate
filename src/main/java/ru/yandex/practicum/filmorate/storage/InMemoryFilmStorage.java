@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.FilmException;
-import ru.yandex.practicum.filmorate.exceptions.FilmIDException;
+import ru.yandex.practicum.filmorate.exceptions.IDException;
+import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
@@ -23,7 +23,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
 
-    public Film create(Film film) throws FilmException {
+    public Film create(Film film) throws ValidateException {
         checkFilm(film);
         film.setId(filmsID++);
         films.put(film.getId(), film);
@@ -31,24 +31,24 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
 
-    public Film update(Film film) throws FilmException, FilmIDException {
+    public Film update(Film film) throws ValidateException, IDException {
         if (films.containsKey(film.getId())) {
             checkFilm(film);
             films.put(film.getId(), film);
         } else {
-            throw new FilmIDException("Фильма с таким id: " + film.getId() + " не существует.");
+            throw new IDException("Фильма с таким id: " + film.getId() + " не существует.");
         }
         return film;
     }
 
-    private void checkFilm(Film film) throws FilmException {
+    private void checkFilm(Film film) throws ValidateException {
         if (film.getReleaseDate().isBefore(FILMS_BORN)) {
-            throw new FilmException("Дата выхода фильма не может быть раньше, чем: " + FILMS_BORN);
+            throw new ValidateException("Дата выхода фильма не может быть раньше, чем: " + FILMS_BORN);
         }
     }
-    public Film getFilm(long filmsID) throws FilmIDException {
+    public Film getFilm(long filmsID) throws IDException {
         if (!films.containsKey(filmsID)) {
-            throw new FilmIDException("Фильма с таким id: " + filmsID + " не существует.");
+            throw new IDException("Фильма с таким id: " + filmsID + " не существует.");
         }
         return films.get(filmsID);
     }

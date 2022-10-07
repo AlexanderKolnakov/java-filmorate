@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import ru.yandex.practicum.filmorate.exceptions.FilmException;
+import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 
@@ -53,7 +53,7 @@ class FilmControllerTest {
         String body = objectMapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof FilmException))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ValidateException))
                 .andExpect(result -> assertEquals("Дата выхода фильма не может быть раньше, чем: 1895-12-28",
                         result.getResolvedException().getMessage()));
     }
