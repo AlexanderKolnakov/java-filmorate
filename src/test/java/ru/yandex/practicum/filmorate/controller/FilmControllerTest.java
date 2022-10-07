@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.exceptions.FilmException;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class FilmControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -40,8 +42,7 @@ class FilmControllerTest {
         Film film = new Film( "name", RandomString.make(200), FILMS_BORN.plusDays(1), 1);
         film.setId(1);
         String body = objectMapper.writeValueAsString(film);
-        this.mockMvc.perform(
-                        post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().json(body));
     }
@@ -50,8 +51,7 @@ class FilmControllerTest {
     void tryToCreateFilmWithEarlyDateBadSuccessful() throws Exception {
         Film film = new Film( "name", RandomString.make(100), FILMS_BORN.minusDays(1), 1);
         String body = objectMapper.writeValueAsString(film);
-        this.mockMvc.perform(
-                        post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof FilmException))
                 .andExpect(result -> assertEquals("Дата выхода фильма не может быть раньше, чем: 1895-12-28",
@@ -62,8 +62,7 @@ class FilmControllerTest {
     @MethodSource("filmParam")
     void tryToCreateFilmWithEBadRequest(Film films, String message) throws Exception {
         String body = objectMapper.writeValueAsString(films);
-        this.mockMvc.perform(
-                        post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
                 .andExpect(result -> assertTrue(
