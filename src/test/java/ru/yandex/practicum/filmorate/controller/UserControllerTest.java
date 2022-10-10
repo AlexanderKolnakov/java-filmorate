@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -37,8 +39,7 @@ class UserControllerTest {
         user.setName("Name");
         user.setId(2);
         String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(
-                        post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().json(body));
     }
@@ -47,8 +48,7 @@ class UserControllerTest {
     @MethodSource("usersParam")
     void tryToCreateUserWithBadRequest(User users, String message) throws Exception {
         String body = objectMapper.writeValueAsString(users);
-        this.mockMvc.perform(
-                        post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
                 .andExpect(result -> assertTrue(
@@ -60,8 +60,7 @@ class UserControllerTest {
         User user = new User("name@yendex.ru", "login", LocalDate.now().minusDays(1));
         user.setId(1);
         String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(
-                        post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
 

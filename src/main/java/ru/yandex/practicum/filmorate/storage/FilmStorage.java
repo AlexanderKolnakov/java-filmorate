@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.exceptions.FilmException;
-import ru.yandex.practicum.filmorate.exceptions.FilmIDException;
+
+import ru.yandex.practicum.filmorate.exceptions.IDException;
+import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
@@ -11,10 +12,10 @@ public interface FilmStorage {
 
 
 
-    public Film create(Film film) throws FilmException ;
+    public Film create(Film film) throws ValidateException;
 
 
 
-    public Film update(Film film) throws FilmException, FilmIDException ;
+    public Film update(Film film) throws ValidateException, IDException;
 
 }

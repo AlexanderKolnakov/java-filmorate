@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.UserException;
-import ru.yandex.practicum.filmorate.exceptions.UserIDException;
+import ru.yandex.practicum.filmorate.exceptions.IDException;
+import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -20,16 +20,16 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
-    public User create(User user) throws UserException {
+    public User create(User user) throws ValidateException {
         user.setId(usersID++);
         checkUser(user);
         users.put(user.getId(), user);
         return user;
     }
 
-    public User update(User user) throws UserException, UserIDException {
+    public User update(User user) throws ValidateException, IDException {
         if (!users.containsKey(user.getId())) {
-            throw new UserIDException("Пользователя с id: " + user.getId() + " не существует.");
+            throw new IDException("Пользователя с id: " + user.getId() + " не существует.");
         } else {
             checkUser(user);
             users.put(user.getId(), user);
@@ -37,18 +37,18 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    private void checkUser(User user) throws UserException {
+    private void checkUser(User user) throws ValidateException {
         if (user.getName()== null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         } else if (user.getName().isBlank()) {
-            throw new UserException("Имя пользователя не может быть пустым, ему присвоено имя в соответствии с его логином: "
+            throw new ValidateException("Имя пользователя не может быть пустым, ему присвоено имя в соответствии с его логином: "
                     + user.getName());
         }
     }
 
-    public User getUser(long userID) throws UserIDException {
+    public User getUser(long userID) throws IDException {
         if (!users.containsKey(userID)) {
-            throw new UserIDException("Пользователя с id: " + userID + " не существует.");
+            throw new IDException("Пользователя с id: " + userID + " не существует.");
         }
         return users.get(userID);
     }

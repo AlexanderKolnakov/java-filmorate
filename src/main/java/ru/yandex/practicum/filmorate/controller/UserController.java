@@ -2,9 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.yandex.practicum.filmorate.exceptions.UserException;
+import ru.yandex.practicum.filmorate.exceptions.IDException;
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exceptions.UserIDException;
+import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -32,26 +32,26 @@ public class UserController {
         return inMemoryUserStorage.findAll();
     }
     @GetMapping("/users/{id}")
-    public User findUser(@PathVariable long id) throws UserIDException {
+    public User findUser(@PathVariable long id) throws IDException {
         log.info("Получен GET запрос /users/{}.", id);
         return inMemoryUserStorage.getUser(id);
     }
 
     @GetMapping("/users/{id}/friends")
-    public List<User> findAllFriends(@PathVariable long id) throws UserIDException {
+    public List<User> findAllFriends(@PathVariable long id) throws IDException {
         log.info("Получен GET запрос /users/{}/friends.", id);
         return userService.showFriend(id);
 
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
-    public List<User> findGeneralFriends(@PathVariable long id, @PathVariable long otherId) throws UserIDException {
+    public List<User> findGeneralFriends(@PathVariable long id, @PathVariable long otherId) throws IDException {
         log.info("Получен GET запрос /users/{}/friends/common/{}", id, otherId);
         return userService.showGeneralFriends(id, otherId);
     }
 
     @PostMapping( "/users")
-    public User create(@Valid @RequestBody User user) throws UserException {
+    public User create(@Valid @RequestBody User user) throws ValidateException {
         log.info("Получен POST запрос /users. Передано: {}", user);
         inMemoryUserStorage.create(user);
         log.info("Пользователю: {} присвоен ID: {}", user.getName(), user.getId());
@@ -59,19 +59,19 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public User update(@Valid @RequestBody User user) throws UserException, UserIDException {
+    public User update(@Valid @RequestBody User user) throws ValidateException, IDException {
         log.info("Получен PUT запрос /users. Передано: {}", user);
         inMemoryUserStorage.update(user);
         return user;
     }
     @PutMapping("/users/{id}/friends/{friendId}")
-    public void putLikeForFilm (@PathVariable long id, @PathVariable long friendId) throws UserIDException {
+    public void putLikeForFilm (@PathVariable long id, @PathVariable long friendId) throws IDException {
         log.info("Получен PUT запрос /users/{}/friends/{}.", id, friendId);
         userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
-    public void deleteLikeForFilm (@PathVariable long id, @PathVariable long friendId) throws UserIDException {
+    public void deleteLikeForFilm (@PathVariable long id, @PathVariable long friendId) throws IDException {
         log.info("Получен DELETE запрос /users/{}/friends/{}.", id, friendId);
         userService.deleteFriend(id, friendId);
     }

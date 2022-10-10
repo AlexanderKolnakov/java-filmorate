@@ -2,8 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.FilmIDException;
-import ru.yandex.practicum.filmorate.exceptions.UserIDException;
+import ru.yandex.practicum.filmorate.exceptions.IDException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
@@ -26,13 +25,13 @@ public class FilmService {
     }
 
 
-    public void addLike(long userID, long filmID) throws FilmIDException, UserIDException {
+    public void addLike(long userID, long filmID) throws IDException {
         final User user = inMemoryUserStorage.getUser(userID);
         final Film film = inMemoryFilmStorage.getFilm(filmID);
         film.addLike(user.getId());
     }
 
-    public void deleteLike(long userID, long filmID) throws FilmIDException, UserIDException {
+    public void deleteLike(long userID, long filmID) throws IDException {
         final User user = inMemoryUserStorage.getUser(userID);
         final Film film = inMemoryFilmStorage.getFilm(filmID);
         film.deleteLike(user.getId());
