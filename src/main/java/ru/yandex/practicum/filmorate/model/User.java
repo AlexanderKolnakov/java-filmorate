@@ -12,21 +12,21 @@ import java.util.Set;
 
 @Data
 public class User {
-    long id;
+    private int id;
 
     @Email(message = "Не корректный адрес электронной почты")
-    final String email;
+    private final String email;
 
     @NotNull(message = "Логин не может быть null")
     @NotBlank(message = "Логин не может быть пустым")
-    final String login;
+    private final String login;
 
     String name;
 
     @Past(message = "Дата рождения не может быть в будущем")
-    final LocalDate birthday;
+    private final LocalDate birthday;
 
-    final Set<Long> friendsID = new HashSet<>();
+    private final Set<Integer> friendsID = new HashSet<>();
     }
 
 

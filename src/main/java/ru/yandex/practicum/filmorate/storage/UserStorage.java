@@ -12,4 +12,5 @@ public interface UserStorage {
     public User create(User user) throws ValidateException;
 
     public User update(User user) throws ValidateException, IDException;
+    User getUser(int userID) throws IDException;
 }

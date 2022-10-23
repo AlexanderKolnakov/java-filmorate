@@ -11,17 +11,16 @@ import ru.yandex.practicum.filmorate.exceptions.*;
 @RestControllerAdvice
 public class ErrorHandler {
 
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse dd(final ValidateException e) {
+    public ErrorResponse error400(final ValidateException e) {
         log.info("400 {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ErrorResponse dd2(final IDException e) {
+    public ErrorResponse error404(final IDException e) {
         log.info("404 {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
