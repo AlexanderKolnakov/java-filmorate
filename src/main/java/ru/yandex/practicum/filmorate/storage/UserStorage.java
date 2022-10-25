@@ -7,10 +7,13 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.List;
 
 public interface UserStorage {
+    public void addFriend(int userID, int friendID);
     public List<User> findAll();
 
     public User create(User user) throws ValidateException;
 
     public User update(User user) throws ValidateException, IDException;
     User getUser(int userID) throws IDException;
+
+    public boolean validateDataExists(int id);
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,8 +23,21 @@ public class CustomRowMapper {
         return new Film(id, name, description, releaseDate, duration, rate, mpa);
     }
 
+    public static User mapRowToUser(ResultSet resultSet, int i) throws SQLException {
+        int id = resultSet.getInt("user_id");
+        String login = resultSet.getString("login");
+        String name = resultSet.getString("name");
+        String email = resultSet.getString("email");
+        LocalDate birthday = resultSet.getDate("birthday").toLocalDate();
+        return new User(id, login, name, email, birthday);
+    }
+
     public static int mapRowToLikes(ResultSet resultSet, int rowNum) throws SQLException {
         return resultSet.getInt("user_id");
+    }
+
+    public static int mapRowToFriends(ResultSet resultSet, int rowNum) throws SQLException {
+        return resultSet.getInt("friends_id");
     }
 
     public static Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {

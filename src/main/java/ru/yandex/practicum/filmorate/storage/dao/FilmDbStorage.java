@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.CustomRowMapper;
@@ -25,6 +24,8 @@ import java.util.Set;
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
+
 
     private static final String SQL_GET_BY_ID = "SELECT f.film_id, f.name, f.description, " +
             "f.release_date, f.duration, f.rate, f.mpa_id, m.rating " +
@@ -40,9 +41,6 @@ public class FilmDbStorage implements FilmStorage {
     private static final String SQL_VALIDATE = "SELECT COUNT(*) AS count " +
             "FROM films " +
             "WHERE film_id = ?";
-
-    private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-
 
     @Override
     public List<Film> findAll() {
@@ -63,8 +61,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film create(Film film) throws ValidateException {
-
+    public Film create(Film film) {
         log.info("FilmDbStorage: Получен запрос на добавление фильма {}.", film.getName());
 
         SimpleJdbcInsert filmJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -72,15 +69,9 @@ public class FilmDbStorage implements FilmStorage {
                 .usingGeneratedKeyColumns("film_id");
 
         int id = filmJdbcInsert.executeAndReturnKey(film.toMap()).intValue();
-
         film.setId(id);
-
-//        Set<Genre> genres = filmJdbcInsert.execute()
-
         log.info("FilmDbStorage: добавлен фильм с id - {}.", id);
-
         updateGenre(film);
-
         return getFilm(film.getId());
     }
 
@@ -122,7 +113,6 @@ public class FilmDbStorage implements FilmStorage {
 
         Set<Genre> genre = new HashSet<>(jdbcTemplate.query(sqlToGenre, CustomRowMapper::mapRowToGenre, filmsID));
         film.setGenres(genre);
-
         return film;
     }
 
@@ -150,10 +140,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private void updateGenre(Film film) {
         log.info("FilmDbStorage: Обновление жанров фильма с id: {}.", film.getId());
-
         String sqlGenre = "INSERT INTO genre_line(film_id, genre_id) VALUES (?, ?)";
-        log.info("TYT {}", film.getGenres());
-
         for (Genre genre : film.getGenres()) {
             jdbcTemplate.update(sqlGenre, film.getId(), genre.getId());
         }

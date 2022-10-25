@@ -18,6 +18,10 @@ public class InMemoryUserStorage implements UserStorage {
     private int usersID = 1;
     private final Map<Integer, User> users = new HashMap<>();
 
+    @Override
+    public void addFriend(int userID, int friendID) {
+    }
+
     public List<User> findAll() {
         return new ArrayList<>(users.values());
     }
@@ -53,5 +57,10 @@ public class InMemoryUserStorage implements UserStorage {
             throw new IDException("Пользователя с id: " + userID + " не существует.");
         }
         return users.get(userID);
+    }
+
+    @Override
+    public boolean validateDataExists(int id) {
+        return false;
     }
 }
