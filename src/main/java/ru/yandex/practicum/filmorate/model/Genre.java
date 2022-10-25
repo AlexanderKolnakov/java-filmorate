@@ -4,7 +4,11 @@ import lombok.Data;
 
 @Data
 public class Genre {
-    private final int genreId;
-    private final String genreName;
+    private int id;
+    private final String name;
 
+    public Genre(int genreId, String genreName) {
+        this.id = genreId;
+        this.name = genreName;
+    }
 }

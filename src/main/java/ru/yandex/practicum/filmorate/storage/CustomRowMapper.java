@@ -29,4 +29,8 @@ public class CustomRowMapper {
     public static Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
         return new Genre(resultSet.getInt("genre_id"),resultSet.getString("genre_name"));
     }
+
+    public static int mapRowCount(ResultSet resultSet, int rowNum) throws SQLException {
+        return resultSet.getInt("count");
+    }
 }

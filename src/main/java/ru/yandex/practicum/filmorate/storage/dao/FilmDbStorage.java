@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.IDException;
 import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -33,51 +32,77 @@ public class FilmDbStorage implements FilmStorage {
             "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
             "WHERE film_id = ?";
 
+    private static final String SQL_UPDATE_FILM = "UPDATE films SET " +
+            "name = ?, description = ?, release_date = ?, " +
+            "duration = ?, rate = ?, mpa_id = ? " +
+            "WHERE film_id = ?";
+
+    private static final String SQL_VALIDATE = "SELECT COUNT(*) AS count " +
+            "FROM films " +
+            "WHERE film_id = ?";
 
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
 
 
     @Override
     public List<Film> findAll() {
-//        String sql = "select * from films ";
-//        List<Film> listOfFilms = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
-//        return listOfFilms;
-        return null;
+        log.info("FilmDbStorage: Получен запрос на получение всех фильмов.");
+        String sqlToAllFilms = "SELECT * " +
+                "FROM films as f " +
+                "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id ";
+        List<Film> listOfFilms = jdbcTemplate.query(sqlToAllFilms, CustomRowMapper::mapRowToFilm);
+
+
+//        listOfFilms.forEach(this::setMpaName);
+
+//        listOfFilms.forEach(this::setLikes);
+
+//        listOfFilms.forEach(this::setGenre);
+
+        return listOfFilms;
     }
 
     @Override
     public Film create(Film film) throws ValidateException {
 
-        log.info("FilmDbStorage: Получен запрос к хранилищу на добавление фильма {}.", film.getName());
+        log.info("FilmDbStorage: Получен запрос на добавление фильма {}.", film.getName());
 
         SimpleJdbcInsert filmJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
                 .usingGeneratedKeyColumns("film_id");
 
-//        SimpleJdbcInsert mpaJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-//                .withTableName("mpa");
-//
-//        mpaJdbcInsert.execute(film.getMpa().toMap());
-
         int id = filmJdbcInsert.executeAndReturnKey(film.toMap()).intValue();
 
         film.setId(id);
 
-        log.info("FilmDbStorage: В хранилище добавлен фильм с id - {}.", id);
+//        Set<Genre> genres = filmJdbcInsert.execute()
+
+        log.info("FilmDbStorage: добавлен фильм с id - {}.", id);
+
         updateGenre(film);
 
-        return film;
+        return getFilm(film.getId());
     }
 
     @Override
-    public Film update(Film film) throws ValidateException, IDException {
-        return null;
-//        return new Film(1, "2", "fw", LocalDate.now(), 1, new Mpa(1, "dw"));
+    public Film update(Film film) {
+        log.info("FilmDbStorage: Получен запрос на обновление фильма  с id: {}.", film.getId());
+
+        jdbcTemplate.update(SQL_UPDATE_FILM,
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDuration(),
+                film.getRate(),
+                film.getMpa().getId(),
+                film.getId());
+        log.info("FilmDbStorage: Фильм с id: {} успешно обновлен.", film.getId());
+        return getFilm(film.getId());
     }
 
     @Override
     public Film getFilm(int filmsID) {
-        log.info("FilmDbStorage: Получен запрос к хранилищу на получение фильма с id: {}.", filmsID);
+        log.info("FilmDbStorage: Получен запрос на получение фильма с id: {}.", filmsID);
 
         Film film = jdbcTemplate.queryForObject(SQL_GET_BY_ID, CustomRowMapper::mapRowToFilm, filmsID);
 
@@ -117,15 +142,28 @@ public class FilmDbStorage implements FilmStorage {
 
     }
 
+    @Override
+    public boolean validateDataExists(int id) {
+        int count = jdbcTemplate.queryForObject(SQL_VALIDATE, CustomRowMapper::mapRowCount, id);
+        return count != 0;
+    }
 
     private void updateGenre(Film film) {
-        int id = film.getId();
-        log.info("FilmDbStorage: Получен запрос на обновление жанров фильма с id: {}.", id);
+        log.info("FilmDbStorage: Обновление жанров фильма с id: {}.", film.getId());
 
-        String sql = "INSERT INTO genre_line(film_id, genre_id) VALUES (?, ?)";
+        String sqlGenre = "INSERT INTO genre_line(film_id, genre_id) VALUES (?, ?)";
+        log.info("TYT {}", film.getGenres());
 
         for (Genre genre : film.getGenres()) {
-            jdbcTemplate.update(sql, id, genre.getGenreId());
+            jdbcTemplate.update(sqlGenre, film.getId(), genre.getId());
         }
     }
+
+//    public void setLikes(Film film) {
+//        String sql = "SELECT user_id " +
+//                "FROM film_likes " +
+//                "WHERE film_id = ?";
+//        Set<Integer> likes = new HashSet<>(jdbcTemplate.query(sql, RowMapper::mapRowToLikes, film.getId()));
+//        film.setLikes(likes);
+//    }
 }

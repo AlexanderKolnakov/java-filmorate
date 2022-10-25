@@ -15,5 +15,7 @@ public interface FilmStorage {
     public Film create(Film film) throws ValidateException;
 
     public Film update(Film film) throws ValidateException, IDException;
-    Film getFilm(int filmsID) throws IDException ;
+    Film getFilm(int filmsID) throws IDException;
+
+    boolean validateDataExists(int id);
 }

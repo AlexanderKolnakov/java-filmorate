@@ -52,4 +52,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         return films.get(filmsID);
     }
+
+    @Override
+    public boolean validateDataExists(int id) {
+        return false;
+    }
 }
