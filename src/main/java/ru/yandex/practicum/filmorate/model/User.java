@@ -36,7 +36,6 @@ public class User {
         values.put("name", name);
         values.put("email", email);
         values.put("birthday", birthday);
-
         return values;
     }
 

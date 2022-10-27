@@ -6,13 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.CustomRowMapper;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Component
 @AllArgsConstructor

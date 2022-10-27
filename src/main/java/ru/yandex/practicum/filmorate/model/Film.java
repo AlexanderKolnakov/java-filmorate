@@ -47,20 +47,11 @@ public class Film {
         this.mpa = mpa;
     }
 
-    public void addLike(int userID) {
-        usersLikes.add(userID);
-        likes = usersLikes.size();
-    }
-
     public void setLikes(Set<Integer> likesSet) {
         usersLikes = likesSet;
         likes = usersLikes.size();
     }
 
-    public void deleteLike(int userID) {
-        usersLikes.remove(userID);
-        likes = usersLikes.size();
-    }
     public Map<String,Object> toMap() {
 
         Map<String, Object> values = new HashMap<>();
@@ -70,7 +61,6 @@ public class Film {
         values.put("duration", duration);
         values.put("rate", rate);
         values.put("mpa_id", mpa.getId());
-
         return values;
     }
 

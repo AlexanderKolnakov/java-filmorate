@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.IDException;
@@ -17,11 +16,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
     private final static LocalDate FILMS_BORN = LocalDate.of(1895, 12, 28);
 
-
     public List<Film> findAll() {
         return new ArrayList<>(films.values());
     }
-
 
     public Film create(Film film) throws ValidateException {
         checkFilm(film);
@@ -29,7 +26,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.put(film.getId(), film);
         return film;
     }
-
 
     public Film update(Film film) throws ValidateException, IDException {
         if (films.containsKey(film.getId())) {

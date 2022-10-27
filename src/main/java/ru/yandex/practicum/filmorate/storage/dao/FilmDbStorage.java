@@ -50,13 +50,8 @@ public class FilmDbStorage implements FilmStorage {
         log.info("FilmDbStorage: Получен запрос на получение всех фильмов.");
         List<Film> listOfFilms = jdbcTemplate.query(SQL_TO_ALL_FILMS, CustomRowMapper::mapRowToFilm);
 
-
-//        listOfFilms.forEach(this::setMpaName);
-
         listOfFilms.forEach(this::setLikes);
-
         listOfFilms.forEach(this::setGenre);
-
         return listOfFilms;
     }
 
@@ -98,9 +93,7 @@ public class FilmDbStorage implements FilmStorage {
         log.info("FilmDbStorage: Получен запрос на получение фильма с id: {}.", filmsID);
 
         Film film = jdbcTemplate.queryForObject(SQL_GET_BY_ID, CustomRowMapper::mapRowToFilm, filmsID);
-
         log.trace("FilmDbStorage: Получен фильм: {} {}", film.getId(), film.getName());
-
         Set<Integer> likes = new HashSet<>(jdbcTemplate.query(SQL_TO_LIKES,
                 CustomRowMapper::mapRowToLikes, filmsID));
         film.setLikes(likes);
@@ -130,11 +123,13 @@ public class FilmDbStorage implements FilmStorage {
                 CustomRowMapper::mapRowToLikes, film.getId()));
         film.setLikes(likes);
     }
+
     private void setGenre(Film film) {
         Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_TO_GENRE,
                 CustomRowMapper::mapRowToGenre, film.getId()));
         film.setGenres(genres);
     }
+
     private void deleteGenre(Film film) {
         String sqlDeleteGenre = "DELETE FROM genre_line WHERE film_id = ?";
         jdbcTemplate.update(sqlDeleteGenre, film.getId());

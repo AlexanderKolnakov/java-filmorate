@@ -25,7 +25,6 @@ public class MpaService {
     public Mpa getMpa(int id) throws IDException {
         validateID(id);
         return  mpaStorage.getMpa(id);
-
     }
 
     public void validateID(Integer id) throws IDException {

@@ -34,7 +34,6 @@ public class UserDbStorage implements UserStorage {
             "login = ?, name = ?, email = ?, birthday = ?" +
             "WHERE user_id = ?";
 
-
     @Override
     public List<User> findAll() {
         log.info("UserDbStorage: Получен запрос на получение всех пользователей.");
@@ -85,7 +84,6 @@ public class UserDbStorage implements UserStorage {
 
         Set<Integer> friends = new HashSet<>(jdbcTemplate.query(sqlToFriends, CustomRowMapper::mapRowToFriends, userID));
         user.setFriendsID(friends);
-
         return user;
     }
 
