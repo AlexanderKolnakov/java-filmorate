@@ -15,20 +15,18 @@ import java.util.List;
 @RestController
 @Slf4j
 public class FilmController {
-
     private final FilmService filmService;
-
     @Autowired
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
-
     @GetMapping("/films")
-        public List<Film> findAll() {
+        public List<Film> findAllFilms() {
         log.info("Получен GET запрос /films.");
         return filmService.findAll();
     }
+
     @GetMapping("/films/{id}")
     public Film findFilm(@PathVariable int id) throws IDException {
         log.info("Получен GET запрос /films/{}.", id);
@@ -55,16 +53,15 @@ public class FilmController {
         return filmService.update(film);
     }
 
-//    @PutMapping("/films/{id}/like/{userId}")
-//    public void addLike(@PathVariable int id, @PathVariable int userId) throws IDException {
-//        log.info("Получен PUT запрос /films/{}/like/{}.", id, userId);
-//        filmService.addLike(userId, id);
-//    }
-//
-//    @DeleteMapping("/films/{id}/like/{userId}")
-//    public void deleteLike(@PathVariable int id, @PathVariable int userId) throws IDException {
-//        log.info("Получен DELETE запрос /films/{}/like/{}.", id, userId);
-//        filmService.deleteLike(userId, id);
-//    }
+    @PutMapping("/films/{id}/like/{userId}")
+    public void addLike(@PathVariable int id, @PathVariable int userId) throws IDException {
+        log.info("Получен PUT запрос /films/{}/like/{}.", id, userId);
+        filmService.addLike(userId, id);
+    }
 
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public void deleteLike(@PathVariable int id, @PathVariable int userId) throws IDException {
+        log.info("Получен DELETE запрос /films/{}/like/{}.", id, userId);
+        filmService.deleteLike(userId, id);
+    }
 }

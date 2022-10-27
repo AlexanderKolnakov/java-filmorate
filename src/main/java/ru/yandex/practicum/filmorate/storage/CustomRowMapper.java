@@ -23,7 +23,7 @@ public class CustomRowMapper {
         return new Film(id, name, description, releaseDate, duration, rate, mpa);
     }
 
-    public static User mapRowToUser(ResultSet resultSet, int i) throws SQLException {
+    public static User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
         int id = resultSet.getInt("user_id");
         String login = resultSet.getString("login");
         String name = resultSet.getString("name");
@@ -46,5 +46,11 @@ public class CustomRowMapper {
 
     public static int mapRowCount(ResultSet resultSet, int rowNum) throws SQLException {
         return resultSet.getInt("count");
+    }
+
+    public static Mpa mapRowToMpa(ResultSet resultSet, int rowNum) throws SQLException {
+        int id = resultSet.getInt("mpa_id");
+        String login = resultSet.getString("rating");
+        return new Mpa(id, login);
     }
 }

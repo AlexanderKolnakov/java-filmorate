@@ -12,8 +12,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.CustomRowMapper;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,40 +20,42 @@ import java.util.Set;
 @Qualifier("FilmDbStorage")
 @AllArgsConstructor
 public class FilmDbStorage implements FilmStorage {
-
     private final JdbcTemplate jdbcTemplate;
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-
-
     private static final String SQL_GET_BY_ID = "SELECT f.film_id, f.name, f.description, " +
             "f.release_date, f.duration, f.rate, f.mpa_id, m.rating " +
             "FROM films AS f " +
             "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
             "WHERE film_id = ?";
-
     private static final String SQL_UPDATE_FILM = "UPDATE films SET " +
             "name = ?, description = ?, release_date = ?, " +
             "duration = ?, rate = ?, mpa_id = ? " +
             "WHERE film_id = ?";
-
     private static final String SQL_VALIDATE = "SELECT COUNT(*) AS count " +
             "FROM films " +
+            "WHERE film_id = ?";
+    private static final String SQL_TO_LIKES = "SELECT user_id " +
+            "FROM users_likes_film " +
+            "WHERE film_id = ?";
+    private static final String SQL_TO_ALL_FILMS = "SELECT * " +
+            "FROM films as f " +
+            "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id ";
+    private static final String SQL_TO_GENRE = "SELECT gl.genre_id, g.genre_name " +
+            "FROM genre_line AS gl " +
+            "LEFT JOIN genre AS g ON gl.genre_id = g.genre_id " +
             "WHERE film_id = ?";
 
     @Override
     public List<Film> findAll() {
         log.info("FilmDbStorage: Получен запрос на получение всех фильмов.");
-        String sqlToAllFilms = "SELECT * " +
-                "FROM films as f " +
-                "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id ";
-        List<Film> listOfFilms = jdbcTemplate.query(sqlToAllFilms, CustomRowMapper::mapRowToFilm);
+        List<Film> listOfFilms = jdbcTemplate.query(SQL_TO_ALL_FILMS, CustomRowMapper::mapRowToFilm);
 
 
 //        listOfFilms.forEach(this::setMpaName);
 
-//        listOfFilms.forEach(this::setLikes);
+        listOfFilms.forEach(this::setLikes);
 
-//        listOfFilms.forEach(this::setGenre);
+        listOfFilms.forEach(this::setGenre);
 
         return listOfFilms;
     }
@@ -87,6 +87,8 @@ public class FilmDbStorage implements FilmStorage {
                 film.getRate(),
                 film.getMpa().getId(),
                 film.getId());
+        deleteGenre(film);
+        updateGenre(film);
         log.info("FilmDbStorage: Фильм с id: {} успешно обновлен.", film.getId());
         return getFilm(film.getId());
     }
@@ -99,37 +101,14 @@ public class FilmDbStorage implements FilmStorage {
 
         log.trace("FilmDbStorage: Получен фильм: {} {}", film.getId(), film.getName());
 
-        String sqlToLikes = "SELECT user_id " +
-                    "FROM users_likes_film " +
-                    "WHERE film_id = ?";
-
-        Set<Integer> likes = new HashSet<>(jdbcTemplate.query(sqlToLikes, CustomRowMapper::mapRowToLikes, filmsID));
+        Set<Integer> likes = new HashSet<>(jdbcTemplate.query(SQL_TO_LIKES,
+                CustomRowMapper::mapRowToLikes, filmsID));
         film.setLikes(likes);
 
-        String sqlToGenre = "SELECT gl.genre_id, g.genre_name " +
-                "FROM genre_line AS gl " +
-                "LEFT JOIN genre AS g ON gl.genre_id = g.genre_id " +
-                "WHERE film_id = ?";
-
-        Set<Genre> genre = new HashSet<>(jdbcTemplate.query(sqlToGenre, CustomRowMapper::mapRowToGenre, filmsID));
+        Set<Genre> genre = new HashSet<>(jdbcTemplate.query(SQL_TO_GENRE,
+                CustomRowMapper::mapRowToGenre, filmsID));
         film.setGenres(genre);
         return film;
-    }
-
-    private Film makeFilm(ResultSet rs) throws SQLException {
-//        Integer id = rs.getInt("film_id");
-//        String  name = rs.getString("name");
-//        String  description = rs.getString("description");
-//        LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
-//        Integer  duration = rs.getInt("duration");
-//        String  rating = rs.getString("rating");
-//        List<String> genre = new LinkedList<>();
-//
-//        return new Film(id, name, description, releaseDate, duration, rating, genre);
-
-        return null;
-//        return new Film(1, "2", "fw", LocalDate.now(), 1, new Mpa(1, "dw"));
-
     }
 
     @Override
@@ -146,11 +125,18 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-//    public void setLikes(Film film) {
-//        String sql = "SELECT user_id " +
-//                "FROM film_likes " +
-//                "WHERE film_id = ?";
-//        Set<Integer> likes = new HashSet<>(jdbcTemplate.query(sql, RowMapper::mapRowToLikes, film.getId()));
-//        film.setLikes(likes);
-//    }
+    public void setLikes(Film film) {
+        Set<Integer> likes = new HashSet<>(jdbcTemplate.query(SQL_TO_LIKES,
+                CustomRowMapper::mapRowToLikes, film.getId()));
+        film.setLikes(likes);
+    }
+    private void setGenre(Film film) {
+        Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_TO_GENRE,
+                CustomRowMapper::mapRowToGenre, film.getId()));
+        film.setGenres(genres);
+    }
+    private void deleteGenre(Film film) {
+        String sqlDeleteGenre = "DELETE FROM genre_line WHERE film_id = ?";
+        jdbcTemplate.update(sqlDeleteGenre, film.getId());
+    }
 }

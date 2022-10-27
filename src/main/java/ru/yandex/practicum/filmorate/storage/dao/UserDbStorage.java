@@ -36,13 +36,6 @@ public class UserDbStorage implements UserStorage {
 
 
     @Override
-    public void addFriend(int userID, int friendID) {
-        log.info("UserDbStorage: Пользователь с id: {} добавляет пользователя с id {} в друзья.", userID, friendID);
-        String sqlAddFriend = "INSERT INTO friends_line(user_id, friends_id) VALUES (?, ?)";
-        jdbcTemplate.update(sqlAddFriend, userID, friendID);
-    }
-
-    @Override
     public List<User> findAll() {
         log.info("UserDbStorage: Получен запрос на получение всех пользователей.");
         String sqlToAllUsers = "SELECT * " +

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IDException;
 import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -17,30 +18,27 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     public final UserStorage userStorage;
+    public final FriendStorage friendStorage;
 
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendStorage friendStorage) {
         this.userStorage = userStorage;
+        this.friendStorage = friendStorage;
     }
 
 
     public void addFriend(int userID, int friendID) throws IDException {
         validateID(userID);
         validateID(friendID);
-        userStorage.addFriend(userID, friendID);
-
-//        final User user = userStorage.getUser(userID);
-//        final User friend = userStorage.getUser(friendID);
-//        user.getFriendsID().add(friendID);
-//        friend.getFriendsID().add(userID);
+        friendStorage.addFriend(userID, friendID);
     }
-//
-//    public void deleteFriend(int userID, int friendID) throws IDException {
-//        final User user = userStorage.getUser(userID);
-//        final User friend = userStorage.getUser(friendID);
-//        user.getFriendsID().remove(friendID);
-//        friend.getFriendsID().remove(userID);
-//    }
+
+    public void deleteFriend(int userID, int friendID) throws IDException {
+        validateID(userID);
+        validateID(friendID);
+        friendStorage.deleteFriend(userID, friendID);
+
+    }
 
     public List<User> showGeneralFriends(int userID, int friendID) throws IDException {
         List<User> userFriends = showFriend(userID);

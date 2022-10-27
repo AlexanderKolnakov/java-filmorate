@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.exceptions.IDException;
 import ru.yandex.practicum.filmorate.exceptions.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.LikesStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -15,10 +17,15 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
     public final FilmStorage filmStorage;
+    public final UserStorage userStorage;
+    public final LikesStorage likesStorage;
 
     @Autowired
-  public FilmService(@Qualifier("FilmDbStorage")FilmStorage filmStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, @Qualifier("UserDbStorage") UserStorage userStorage,
+                       LikesStorage likesStorage) {
+        this.likesStorage = likesStorage;
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
     public List<Film> findAll() {
@@ -46,24 +53,27 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public void addLike(int userID, int filmID) throws IDException {
+        validate(filmID);
+        validateUser(userID);
+        likesStorage.addLike(userID, filmID);
+    }
+
+    public void deleteLike(int userID, int filmID) throws IDException {
+        validate(filmID);
+        validateUser(userID);
+        likesStorage.deleteLike(userID, filmID);
+    }
+
     public void validate(Integer id) throws IDException {
         if (!filmStorage.validateDataExists(id)) {
             throw new IDException("Фильма с id: " + id + " не существует.");
         }
     }
 
-
-//    public void addLike(int userID, int filmID) throws IDException {
-//        final User user = userStorage.getUser(userID);
-//        final Film film = filmStorage.getFilm(filmID);
-//        film.addLike(user.getId());
-//    }
-//
-//    public void deleteLike(int userID, int filmID) throws IDException {
-//        final User user = userStorage.getUser(userID);
-//        final Film film = filmStorage.getFilm(filmID);
-//        film.deleteLike(user.getId());
-//    }
-//
-
+    public void validateUser(Integer id) throws IDException {
+        if (!userStorage.validateDataExists(id)) {
+            throw new IDException("Пользователя с id: " + id + " не существует.");
+        }
+    }
 }
