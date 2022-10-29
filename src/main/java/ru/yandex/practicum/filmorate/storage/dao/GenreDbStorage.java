@@ -17,7 +17,7 @@ public class GenreDbStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-    private static final String SQL_VALIDATE = "SELECT COUNT(*) AS count " +
+    private static final String SQL_VALIDATE = "SELECT COUNT(genre_id) AS count " +
             "FROM genre " +
             "WHERE genre_id = ?";
     private static final String SQL_TO_ALL_GENRE = "SELECT * " +

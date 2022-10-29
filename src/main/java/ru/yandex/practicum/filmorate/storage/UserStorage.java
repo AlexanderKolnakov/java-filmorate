@@ -7,9 +7,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.List;
 
 public interface UserStorage {
-    public List<User> findAll();
-    public User create(User user) throws ValidateException;
-    public User update(User user) throws ValidateException, IDException;
+    List<User> findAll();
+    User create(User user) throws ValidateException;
+    User update(User user) throws ValidateException, IDException;
     User getUser(int userID) throws IDException;
-    public boolean validateDataExists(int id);
+    boolean validateDataExists(int id);
 }

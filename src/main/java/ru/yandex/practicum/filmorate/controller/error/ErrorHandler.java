@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,6 +24,13 @@ public class ErrorHandler {
     public ErrorResponse error404(final IDException e) {
         log.info("404 {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public String error400(final MethodArgumentNotValidException e) {
+        log.info("400 {}", e.getMessage());
+        return e.getFieldError().getDefaultMessage();
     }
 }
 

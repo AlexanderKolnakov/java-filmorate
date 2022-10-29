@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
+@RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
     @Autowired
@@ -21,19 +22,19 @@ public class FilmController {
         this.filmService = filmService;
     }
 
-    @GetMapping("/films")
+    @GetMapping
         public List<Film> findAllFilms() {
         log.info("Получен GET запрос /films.");
         return filmService.findAll();
     }
 
-    @GetMapping("/films/{id}")
+    @GetMapping("/{id}")
     public Film findFilm(@PathVariable int id) throws IDException {
         log.info("Получен GET запрос /films/{}.", id);
         return filmService.getFilm(id);
     }
 
-    @GetMapping("/films/popular")
+    @GetMapping("/popular")
     public List<Film> findMostLikedFilms(@RequestParam(defaultValue = "10") int count) {
         log.info("Получен GET запрос /films/popular?count={}.", count);
         List<Film> listOfFilms = filmService.getMostLikedFilms(count);
@@ -41,25 +42,25 @@ public class FilmController {
         return listOfFilms;
     }
 
-    @PostMapping("/films")
+    @PostMapping
     public Film create(@Valid @RequestBody Film film) throws ValidateException {
         log.info("Получен POST запрос /films. Передано: {}", film);
         return filmService.create(film);
     }
 
-    @PutMapping("/films")
+    @PutMapping
     public Film update(@Valid @RequestBody Film film) throws ValidateException, IDException {
         log.info("Получен PUT запрос /films. Передано: {}", film);
         return filmService.update(film);
     }
 
-    @PutMapping("/films/{id}/like/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) throws IDException {
         log.info("Получен PUT запрос /films/{}/like/{}.", id, userId);
         filmService.addLike(userId, id);
     }
 
-    @DeleteMapping("/films/{id}/like/{userId}")
+    @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable int id, @PathVariable int userId) throws IDException {
         log.info("Получен DELETE запрос /films/{}/like/{}.", id, userId);
         filmService.deleteLike(userId, id);

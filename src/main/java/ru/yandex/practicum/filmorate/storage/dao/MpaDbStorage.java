@@ -17,7 +17,7 @@ public class MpaDbStorage implements MpaStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-    private static final String SQL_VALIDATE = "SELECT COUNT(*) AS count " +
+    private static final String SQL_VALIDATE = "SELECT COUNT(mpa_id) AS count " +
             "FROM mpa " +
             "WHERE mpa_id = ?";
     private static final String SQL_GET_BY_ID = "SELECT * " +

@@ -23,7 +23,7 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
 
-    private static final String SQL_VALIDATE = "SELECT COUNT(*) AS count " +
+    private static final String SQL_VALIDATE = "SELECT COUNT(user_id) AS count " +
             "FROM users " +
             "WHERE user_id = ?";
     private static final String SQL_GET_BY_ID = "SELECT u.user_id, u.login, u.name, " +

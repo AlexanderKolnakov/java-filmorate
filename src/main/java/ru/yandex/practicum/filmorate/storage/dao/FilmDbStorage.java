@@ -31,7 +31,7 @@ public class FilmDbStorage implements FilmStorage {
             "name = ?, description = ?, release_date = ?, " +
             "duration = ?, rate = ?, mpa_id = ? " +
             "WHERE film_id = ?";
-    private static final String SQL_VALIDATE = "SELECT COUNT(*) AS count " +
+    private static final String SQL_VALIDATE = "SELECT COUNT(film_id) AS count " +
             "FROM films " +
             "WHERE film_id = ?";
     private static final String SQL_TO_LIKES = "SELECT user_id " +

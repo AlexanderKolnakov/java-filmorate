@@ -19,16 +19,18 @@ public class Film {
     private final String name;
 
     @Size(max = 200, message = "Описание фильма должно содержать не более 200 символов")
+    @NotNull(message = "Описание фильма не может быть null")
     private final String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate releaseDate;
-
     @Positive(message = "Продолжительность фильма должна быть положительным целочисленным числом.")
     private final int duration;
 
+    @NotNull(message = "Рейтинг не может быть null")
     private final int rate;
 
+    @NotNull(message = "Рейтинг (Mpa) не может быть null")
     private final Mpa mpa;
 
     private Set<Genre> genres = new TreeSet<>();

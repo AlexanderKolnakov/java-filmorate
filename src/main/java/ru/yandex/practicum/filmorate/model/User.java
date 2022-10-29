@@ -22,9 +22,11 @@ public class User {
     String name;
 
     @Email(message = "Не корректный адрес электронной почты")
+    @NotNull(message = "Email не может быть null")
     private final String email;
 
     @Past(message = "Дата рождения не может быть в будущем")
+    @NotNull(message = "Дата рождения не может быть null")
     private final LocalDate birthday;
 
     private Set<Integer> friendsID = new HashSet<>();
