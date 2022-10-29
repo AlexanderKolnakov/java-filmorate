@@ -48,7 +48,7 @@ public class FilmService {
 
     public List<Film> getMostLikedFilms(int sizeOfList) {
         return filmStorage.findAll().stream()
-                .sorted(Comparator.comparingLong(Film::getLikes).reversed())
+                .sorted(Comparator.comparingLong(Film::getFilmLikes).reversed())
                 .limit(sizeOfList)
                 .collect(Collectors.toList());
     }
