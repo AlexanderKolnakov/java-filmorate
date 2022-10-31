@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 public class User {
     private int id;
-    @Pattern(regexp = "^\\S*$", message = "Логин не должен содержать пробелы.")
+    @Pattern(regexp = "^\\S*$", message = "Логин не должен содержать пробелы")
     @NotNull(message = "Логин не может быть null")
     @NotBlank(message = "Логин не может быть пустым")
     private final String login;

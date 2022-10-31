@@ -61,12 +61,12 @@ class UserControllerTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void tryToCreateUserWithBlankNameRequestSuccessful() throws Exception {
-        User user = new User(10, "login name", "", "name@yendex.ru", LocalDate.now().minusDays(1));
+        User user = new User(10, "login", "", "name@yendex.ru", LocalDate.now().minusDays(1));
         user.setId(1);
         String body = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.name").value("login name"));
+                .andExpect(jsonPath("$.name").value("login"));
     }
 
     private static Stream<Arguments> usersParam() {
@@ -79,6 +79,9 @@ class UserControllerTest {
                         "Логин не может быть пустым"),
                 Arguments.of(new User(1, "login", "name", "@yendexd.ru",
                                 LocalDate.now().minusDays(1)),
-                        "Не корректный адрес электронной почты"));
+                        "Не корректный адрес электронной почты"),
+        Arguments.of(new User(1, "login name", "name", "dw@yendexd.ru",
+                        LocalDate.now().minusDays(1)),
+                "Логин не должен содержать пробелы"));
     }
 }
