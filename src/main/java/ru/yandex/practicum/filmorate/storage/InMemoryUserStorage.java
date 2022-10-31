@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.IDException;
 import ru.yandex.practicum.filmorate.exceptions.ValidateException;
@@ -11,10 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Qualifier("InMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
 
-    private long usersID = 1;
-    private final Map<Long, User> users = new HashMap<>();
+    private int usersID = 1;
+    private final Map<Integer, User> users = new HashMap<>();
 
     public List<User> findAll() {
         return new ArrayList<>(users.values());
@@ -46,10 +48,15 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
-    public User getUser(long userID) throws IDException {
+    public User getUser(int userID) throws IDException {
         if (!users.containsKey(userID)) {
             throw new IDException("Пользователя с id: " + userID + " не существует.");
         }
         return users.get(userID);
+    }
+
+    @Override
+    public boolean validateDataExists(int id) {
+        return false;
     }
 }

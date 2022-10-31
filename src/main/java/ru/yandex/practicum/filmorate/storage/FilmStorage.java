@@ -8,14 +8,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.List;
 
 public interface FilmStorage {
-    public List<Film> findAll();
 
-
-
-    public Film create(Film film) throws ValidateException;
-
-
-
-    public Film update(Film film) throws ValidateException, IDException;
-
+    List<Film> findAll();
+    Film create(Film film) throws ValidateException;
+    Film update(Film film) throws ValidateException, IDException;
+    Film getFilm(int filmsID) throws IDException;
+    boolean validateDataExists(int id);
 }
