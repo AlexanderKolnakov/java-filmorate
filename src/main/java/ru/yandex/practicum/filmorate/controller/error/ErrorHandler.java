@@ -14,16 +14,17 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse error400(final ValidateException e) {
+    public String error400(final ValidateException e) {
         log.info("400 {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
+        return e.getMessage();
+
     }
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ErrorResponse error404(final IDException e) {
+    public String error404(final IDException e) {
         log.info("404 {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
+        return e.getMessage();
     }
 
     @ExceptionHandler

@@ -37,8 +37,6 @@ public class Film {
 
     private Set<Integer> usersLikes = new HashSet<>();
 
-//    private int likes = 0;
-
     public Film(int id, String name, String description, LocalDate releaseDate, int duration, int rate, Mpa mpa) {
         this.id = id;
         this.name = name;
@@ -51,7 +49,6 @@ public class Film {
 
     public void setLikes(Set<Integer> likesSet) {
         usersLikes = likesSet;
-//        likes = usersLikes.size();
     }
 
     public Map<String,Object> toMap() {

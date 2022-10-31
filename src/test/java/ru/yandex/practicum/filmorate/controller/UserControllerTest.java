@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -34,7 +33,6 @@ class UserControllerTest {
     private ObjectMapper objectMapper;
 
     User user = new User(1, "login", "name", "name@yendex.ru", LocalDate.now().minusDays(1));
-
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -83,5 +81,4 @@ class UserControllerTest {
                                 LocalDate.now().minusDays(1)),
                         "Не корректный адрес электронной почты"));
     }
-
 }

@@ -64,7 +64,6 @@ class FilmControllerTest {
                         result.getResolvedException().getMessage().contains(message)));
     }
 
-
     private static Stream<Arguments> filmParam() {
         Mpa mpa = new Mpa(1, "G");
         return Stream.of(
