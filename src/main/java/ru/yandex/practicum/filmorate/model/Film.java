@@ -1,42 +1,73 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
+@Slf4j
 public class Film {
 
-    long id;
+    private int id;
 
     @NotNull(message = "Имя не может быть null")
     @NotBlank(message = "Имя не может быть пустым")
-    final String name;
+    private final String name;
 
     @Size(max = 200, message = "Описание фильма должно содержать не более 200 символов")
-    final String description;
+    @NotNull(message = "Описание фильма не может быть null")
+    private final String description;
 
-    final LocalDate releaseDate;
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private final LocalDate releaseDate;
     @Positive(message = "Продолжительность фильма должна быть положительным целочисленным числом.")
-    final long duration;
+    private final int duration;
 
-    private Set<Long> usersLikes = new HashSet<>();
+    @NotNull(message = "Рейтинг не может быть null")
+    private final int rate;
 
-    private long likes = 0;
+    @NotNull(message = "Рейтинг (Mpa) не может быть null")
+    private final Mpa mpa;
 
-    public void addLike(long userID) {
-        usersLikes.add(userID);
-        likes = usersLikes.size();
+    private Set<Genre> genres = new TreeSet<>();
+
+    private Set<Integer> usersLikes = new HashSet<>();
+
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration, int rate, Mpa mpa) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.rate = rate;
+        this.mpa = mpa;
     }
 
-    public void deleteLike(long userID) {
-        usersLikes.remove(userID);
-        likes = usersLikes.size();
+    public void setLikes(Set<Integer> likesSet) {
+        usersLikes = likesSet;
     }
 
+    public Map<String,Object> toMap() {
 
+        Map<String, Object> values = new HashMap<>();
+        values.put("name", name);
+        values.put("description", description);
+        values.put("release_date", releaseDate);
+        values.put("duration", duration);
+        values.put("rate", rate);
+        values.put("mpa_id", mpa.getId());
+        return values;
+    }
+
+    public void setGenres(Set<Genre> genresSet) {
+        genres = genresSet;
+    }
+
+    public int getFilmLikes() {
+        return usersLikes.size();
+    }
 }
